@@ -26,7 +26,7 @@ public class GenericMatrix<R, C, T, V> extends AbstractMatrix<R, C, T, V> implem
 
 	public GenericMatrix(Resolver<T, R> rowResolver, Resolver<T, C> colResolver,
 			Accummulator<T, V> accummulator) {
-		super(new HashMap<R, Map<C, Matrix.Cell<T, V>>>(), new HashMap<C, Matrix.Cell<T, V>>(),
+		super(new HashMap<R, Map<C, Matrix.Cell<T, V>>>(), new ArrayList<T>(), new HashMap<C, Matrix.Cell<T, V>>(),
 				new HashMap<R, Matrix.Cell<T, V>>(), new Cell<T, V>(accummulator));
 		this.rowResolver = rowResolver;
 		this.colResolver = colResolver;

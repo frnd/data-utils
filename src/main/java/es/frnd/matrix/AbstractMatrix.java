@@ -23,21 +23,31 @@
  */
 package es.frnd.matrix;
 
+import java.util.AbstractMap;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 /**
- * @author fernando
  * 
+ * @author fernando
+ *
+ * @param <R> The row index type
+ * @param <C> The column index type
+ * @param <T> The type of the elements that matrix will contain.
+ * @param <V> The type of the value. Is the result of accumulation this cell constituents.
  */
 public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 
 	final Map<R, Map<C, Cell<T, V>>>	backingMap;
+	final List<T>						allItems;
 	final Map<C, Cell<T, V>>			totalRow;
 	final Map<R, Cell<T, V>>			totalColumn;
 	final Cell<T, V>					total;
@@ -69,13 +79,14 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 	 */
 	protected abstract Cell<T, V> createCell();
 
-	public AbstractMatrix(Map<R, Map<C, Matrix.Cell<T, V>>> backingMap,
+	public AbstractMatrix(Map<R, Map<C, Matrix.Cell<T, V>>> backingMap, List<T> allItems,
 			Map<C, Cell<T, V>> totalRow, Map<R, Cell<T, V>> totalColumn, Cell<T, V> total) {
 		super();
 		this.backingMap = backingMap;
 		this.totalRow = totalRow;
 		this.totalColumn = totalColumn;
 		this.total = total;
+		this.allItems = allItems;
 	}
 
 	@Override
@@ -112,12 +123,35 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 	@Override
 	public Cell<T, V> get(R row, C column) {
 		Map<C, Cell<T, V>> rowMap = row(row);
-		return rowMap != null ? rowMap.get(column) : null;
+		return rowMap != null && rowMap.get(column) != null ? rowMap.get(column) : getEmptyCell();
+	}
+	
+	private es.frnd.matrix.Matrix.Cell<T, V> getEmptyCell() {
+		return new Cell<T, V>() {
+
+			@Override
+			public V getValue() {
+				return null;
+			}
+
+			@Override
+			public List<T> getItems() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public void accumulate() {
+			}
+
+			@Override
+			public void clear() {
+			}
+		};
 	}
 
 	@Override
 	public int size() {
-		return rowMap().size() * columnMap().size();
+		return  allItems.size(); //rowMap().size() * columnMap().size();
 	}
 
 	@Override
@@ -442,6 +476,7 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 	@Override
 	public void clear() {
 		backingMap.clear();
+		allItems.clear();
 		totalColumn.clear();
 		totalRow.clear();
 		total.clear();
@@ -449,8 +484,8 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 
 	@Override
 	public Cell<T, V> put(T value) {
-		// TODO (frnd) failure tolerance. If one step fails, roll-back the
-		// other.
+		// TODO (frnd) failure tolerance. 
+		// If one step fails, roll-back the other.
 		Cell<T, V> cell;
 		R row;
 		C column;
@@ -458,17 +493,22 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 		row = getRowResolver().resolve(value);
 		column = getColResolver().resolve(value);
 
-		cell = safeTotalRow(column); 
+		// Add the element to the specific total row
+		cell = safeTotalRow(column);
 		cell.getItems().add(value);
 		cell.accumulate();
 
+		// Add the element to the specific total column
 		cell = safeTotalColumn(row);
 		cell.getItems().add(value);
 		cell.accumulate();
 
+		// Add the element to the cell
 		cell = safeGet(row, column);
 		cell.getItems().add(value);
 		cell.accumulate();
+		
+		allItems.add(value);
 
 		return cell;
 	}
@@ -510,8 +550,8 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 
 	@Override
 	public void putAll(Collection<T> values) {
-		// TODO (frnd) improve performance. Some items can fall in the same
-		// cell.
+		// TODO (frnd) improve performance. 
+		// Some items can fall in the same cell.
 		for (T value : values) {
 			put(value);
 		}
@@ -519,8 +559,8 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 
 	@Override
 	public void remove(T value) {
-		// TODO (frnd) failure tolerance. If one step fails, roll-back the
-		// other.
+		// TODO (frnd) failure tolerance. 
+		// If one step fails, roll-back the other.
 		Cell<T, V> cell;
 		R row;
 		C column;
@@ -543,12 +583,14 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 		cell = get(row, column);
 		cell.getItems().remove(value);
 		cell.accumulate();
+		
+		allItems.remove(value);
 	}
 
 	@Override
 	public void removeAll(Collection<T> values) {
-		// TODO (frnd) improve performance. Some items can fall in the same
-		// cell.
+		// TODO (frnd) improve performance. 
+		// Some items can fall in the same cell.
 		for (T value : values) {
 			remove(value);
 		}
@@ -567,8 +609,53 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 
 	@Override
 	public Set<Matrix.Cell<T, V>> cellSet() {
-		// TODO(frnd) Auto-generated method stub
-		throw new UnsupportedOperationException("Still not implemented. Help yourself");
+		return new AbstractSet<Matrix.Cell<T,V>>() {
+
+			@Override
+			public Iterator<es.frnd.matrix.Matrix.Cell<T, V>> iterator() {
+				return new Itr();
+			}
+			
+			class Itr implements Iterator<Matrix.Cell<T,V>> {
+				// Will iterate over rows * columns
+				Iterator<R> rowIterator = rowKeySet().iterator();
+				Iterator<C> colIterator = columnKeySet().iterator();
+				R row;
+				C col;
+				
+				public Itr(){
+					row = rowIterator.next();
+				}
+				
+				@Override
+				public boolean hasNext() {
+					return rowIterator.hasNext() || colIterator.hasNext();
+				}
+
+				@Override
+				public es.frnd.matrix.Matrix.Cell<T, V> next() {
+					if(!hasNext()){
+						throw new NoSuchElementException();
+					} 
+					if (!colIterator.hasNext()){
+						row = rowIterator.next();
+						colIterator = columnKeySet().iterator();
+					}
+					col = colIterator.next();
+					return get(row, col);
+				}
+
+				@Override
+				public void remove() {
+					throw new UnsupportedOperationException("You can not remove a cell of the table.");
+				}
+			};
+
+			@Override
+			public int size() {
+				return rowKeySet().size() * columnKeySet().size();
+			}
+		};
 	}
 
 	@Override
@@ -589,8 +676,7 @@ public abstract class AbstractMatrix<R, C, T, V> implements Matrix<R, C, T, V> {
 
 	@Override
 	public Collection<T> getItems() {
-		// TODO(frnd) Auto-generated method stub
-		throw new UnsupportedOperationException("Still not implemented. Help yourself");
+		return Collections.unmodifiableList(allItems);
 	}
 
 	@Override

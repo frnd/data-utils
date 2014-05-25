@@ -7,8 +7,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -33,6 +35,13 @@ public class SimpleMatrixTest {
 			this.dob = dob;
 			this.sex = sex;
 		}
+
+		@Override
+		public String toString() {
+			return "Person [" + name + "]";
+		}
+		
+		
 	}
 
 	/*
@@ -100,7 +109,7 @@ public class SimpleMatrixTest {
 		persons.add(new Person("Isabel", formatter.parse("18-12-1985"), Sex.FEMALE));
 		persons.add(new Person("Lolo", formatter.parse("18-12-1980"), null));
 		persons.add(new Person("Lolailo", null, Sex.MALE));
-		persons.add(new Person("Lolailo", null, null));
+		persons.add(new Person("LoLola", null, null));
 
 		matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
 				new DateResolver(), new CountAcummulator());
@@ -111,7 +120,8 @@ public class SimpleMatrixTest {
 
 		Cell<Person, Integer> cell;
 		cell = matrix.get(Sex.MALE, LegalDOBStatus.CHILDHOOD);
-		assertNull(cell);
+		assertNotNull(cell);
+		assertNull(cell.getValue());
 
 		cell = matrix.get(Sex.MALE, LegalDOBStatus.ADULTHOOD);
 		assertNotNull(cell);
@@ -124,5 +134,43 @@ public class SimpleMatrixTest {
 		cell = matrix.get(Sex.FEMALE, LegalDOBStatus.CHILDHOOD);
 		assertNotNull(cell);
 		assertEquals(new Integer(1), cell.getValue());
+		
+		Collection<Person> matrixItems = matrix.getItems();
+		System.out.println(matrixItems);
+		assertNotNull(matrixItems);
+		assertEquals(persons.size(), matrixItems.size());
+		assertArrayEquals(persons.toArray(), matrixItems.toArray());
+		
+		Set<Cell<Person,Integer>> cellSet = matrix.cellSet();
+		assertEquals(9, cellSet.size());
+		for (Cell<Person, Integer> c : cellSet) {
+			System.out.println(c.getValue());
+		}
+		
+		
+	}
+	
+	@Test
+	public void simpleMatrixCellSet() throws ParseException {
+		List<Person> persons;
+		Matrix<Sex, LegalDOBStatus, Person, Integer> matrix;
+
+		DateFormat formatter;
+		formatter = new SimpleDateFormat("dd-MM-yyyy");
+
+		persons = new ArrayList<SimpleMatrixTest.Person>();
+		persons.add(new Person("Fernando", formatter.parse("11-04-1979"), Sex.MALE));
+		persons.add(new Person("Pepe", formatter.parse("11-04-1978"), Sex.MALE));
+
+		matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
+				new DateResolver(), new CountAcummulator());
+
+		matrix.putAll(persons);
+		
+		Set<Cell<Person,Integer>> cellSet = matrix.cellSet();
+		assertEquals(1, cellSet.size());
+		for (Cell<Person, Integer> c : cellSet) {
+			System.out.println(c.getValue());
+		}
 	}
 }
