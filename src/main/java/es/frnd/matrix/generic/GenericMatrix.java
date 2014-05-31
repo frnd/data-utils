@@ -83,12 +83,12 @@ public class GenericMatrix<R, C, T, V> extends AbstractMatrix<R, C, T, V> implem
     }
 
     @Override
-    protected es.frnd.matrix.Matrix.Resolver<T, R> getRowResolver() {
+    protected Resolver<T, R> getRowResolver() {
         return rowResolver;
     }
 
     @Override
-    protected es.frnd.matrix.Matrix.Resolver<T, C> getColResolver() {
+    protected Resolver<T, C> getColResolver() {
         return colResolver;
     }
 
