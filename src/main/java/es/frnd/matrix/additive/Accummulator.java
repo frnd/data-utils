@@ -1,6 +1,8 @@
 package es.frnd.matrix.additive;
 
-public abstract class Accummulator<T, V> implements es.frnd.matrix.Matrix.Accummulator<T, V>{
+import es.frnd.matrix.Matrix;
+
+public abstract class Accummulator<T, V> implements Matrix.Accumulator<T, V> {
 
 	PropertyResolver<T, V> propertyResolver;
 	

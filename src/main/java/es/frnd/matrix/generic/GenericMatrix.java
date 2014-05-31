@@ -22,10 +22,10 @@ public class GenericMatrix<R, C, T, V> extends AbstractMatrix<R, C, T, V> implem
 
 	private final Resolver<T, R>		rowResolver;
 	private final Resolver<T, C>		colResolver;
-	private final Accummulator<T, V>	accummulator;
+	private final Accumulator<T, V> accummulator;
 
 	public GenericMatrix(Resolver<T, R> rowResolver, Resolver<T, C> colResolver,
-			Accummulator<T, V> accummulator) {
+			Accumulator<T, V> accummulator) {
 		super(new HashMap<R, Map<C, Matrix.Cell<T, V>>>(), new ArrayList<T>(), new HashMap<C, Matrix.Cell<T, V>>(),
 				new HashMap<R, Matrix.Cell<T, V>>(), new Cell<T, V>(accummulator));
 		this.rowResolver = rowResolver;
@@ -35,11 +35,11 @@ public class GenericMatrix<R, C, T, V> extends AbstractMatrix<R, C, T, V> implem
 
 	static class Cell<T, V> implements Matrix.Cell<T, V> {
 
-		private final Accummulator<T, V>	accummulator;
+		private final Accumulator<T, V> accummulator;
 		private V							value;
 		private List<T>						items;
 
-		public Cell(Accummulator<T, V> accummulator) {
+		public Cell(Accumulator<T, V> accummulator) {
 			this.accummulator = accummulator;
 			items = new ArrayList<T>();
 		}
@@ -58,7 +58,7 @@ public class GenericMatrix<R, C, T, V> extends AbstractMatrix<R, C, T, V> implem
 		}
 
 		public void accumulate() {
-			value = accummulator.cumulate(items);
+			value = accummulator.accumulate(items);
 		}
 
 		/**

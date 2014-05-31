@@ -72,7 +72,7 @@ public interface Matrix<R, C, T, V> {
 	 * 
 	 * @param row
 	 *            key of row to search for
-	 * @param col
+	 * @param column
 	 *            key of column to search for
 	 * @return a cellValue
 	 */
@@ -203,19 +203,15 @@ public interface Matrix<R, C, T, V> {
 	/**
 	 * Return a list of all items where the matrix is made from.
 	 * 
-	 * @return
+	 * @return all items in the matrix
 	 */
 	Collection<T> getItems();
 
 	/**
-	 * A cell is a boundle of items categorized on 2 axis
-	 * 
+	 * A cell is a bundle of items categorized on 2 axis
+	 *
 	 * @author Fernando Gonzalez
 	 * 
-	 * @param <R>
-	 *            the row axis type
-	 * @param <C>
-	 *            the column axis type
 	 * @param <V>
 	 *            the type of the value. Is the result of accumulation this cell
 	 *            constituents.
@@ -245,9 +241,9 @@ public interface Matrix<R, C, T, V> {
 		void clear();
 	}
 
-	public interface Accummulator<T, V> {
+	public interface Accumulator<T, V> {
 
-		V cumulate(List<T> items);
+		V accumulate(List<T> items);
 	}
 
 	public interface Resolver<T, Axis> {
