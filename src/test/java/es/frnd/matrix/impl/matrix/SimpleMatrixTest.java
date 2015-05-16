@@ -82,7 +82,7 @@ public class SimpleMatrixTest {
 
     }
 
-    class CountAcummulator implements Matrix.Accumulator<Person, Integer> {
+    class CountAccumulator implements Matrix.Accumulator<Person, Integer> {
 
         public Integer accumulate(List<Person> items) {
             return items != null ? items.size() : 0;
@@ -106,7 +106,7 @@ public class SimpleMatrixTest {
         persons.add(new Person("LoLola", null, null));
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         matrix.putAll(persons);
 
@@ -161,7 +161,7 @@ public class SimpleMatrixTest {
         persons.add(new Person("Pepe", formatter.parse("11-04-1978"), Sex.MALE));
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         matrix.putAll(persons);
 
@@ -194,7 +194,7 @@ public class SimpleMatrixTest {
         Person lolo = new Person("Lolo", formatter.parse("11-04-1978"), Sex.MALE);
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         matrix.putAll(persons);
 
@@ -216,7 +216,7 @@ public class SimpleMatrixTest {
         persons.add(new Person("Pepe", formatter.parse("11-04-1978"), Sex.MALE));
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         matrix.putAll(persons);
 
@@ -237,7 +237,7 @@ public class SimpleMatrixTest {
         persons.add(new Person("Pepe", formatter.parse("11-04-1978"), Sex.MALE));
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         matrix.putAll(persons);
 
@@ -260,7 +260,7 @@ public class SimpleMatrixTest {
         persons.add(new Person("Pepe", formatter.parse("11-04-1978"), Sex.MALE));
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         matrix.putAll(persons);
 
@@ -282,7 +282,7 @@ public class SimpleMatrixTest {
         persons.add(new Person("Pepe", formatter.parse("11-04-1978"), Sex.MALE));
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         matrix.putAll(persons);
 
@@ -302,7 +302,7 @@ public class SimpleMatrixTest {
         persons.add(new Person("Pepe", formatter.parse("11-04-1978"), Sex.MALE));
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         assertTrue(matrix.isEmpty());
 
@@ -326,7 +326,7 @@ public class SimpleMatrixTest {
         persons.add(pepe);
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         assertTrue(matrix.isEmpty());
 
@@ -359,7 +359,7 @@ public class SimpleMatrixTest {
         persons.add(pepe);
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         assertTrue(matrix.isEmpty());
 
@@ -385,7 +385,7 @@ public class SimpleMatrixTest {
         persons.add(pepe);
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         assertTrue(matrix.isEmpty());
 
@@ -419,7 +419,7 @@ public class SimpleMatrixTest {
         persons.add(pepe);
 
         matrix = new GenericMatrix<Sex, LegalDOBStatus, Person, Integer>(new SexResolver(),
-                new DateResolver(), new CountAcummulator());
+                new DateResolver(), new CountAccumulator());
 
         assertTrue(matrix.isEmpty());
 
